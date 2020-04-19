@@ -1,4 +1,4 @@
-1. Create a Firebase project
+1. Create a Firebase project and [enable Google Cloud Translation API](https://cloud.google.com/translate/docs/basic/setup-basic) for that project
 2. Create a LINE Channel https://developers.line.biz/
 
     1. Set some basic settings like name and copy `Channel secret`
