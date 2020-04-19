@@ -1,7 +1,9 @@
 const functions = require('firebase-functions');
 const line = require('@line/bot-sdk');
 const express = require('express');
-const translate = require('@vitalets/google-translate-api');
+const { Translate } = require('@google-cloud/translate').v2;
+
+const translateService = new Translate({ projectId: process.env.PROJECT_ID });
 
 // create LINE SDK config from env variables
 const config = {
@@ -34,11 +36,12 @@ function handleEvent(event) {
   const isJapanese = event.message.text.match(/[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/) != null;
   const targetLanguage = isJapanese ? 'de' : 'ja';
 
-  return translate(event.message.text, { to: targetLanguage })
+  return translateService.translate(event.message.text, targetLanguage)
     .then(res => {
-      // console.log("translate", res)
-      if (res.text != event.message.text) {
-        const translated = { type: 'text', text: res.text };
+      const translatedString = Array.isArray(res) ? res[0] : "";
+      // console.log("translate", translatedString)
+      if (translatedString !== event.message.text) {
+        const translated = { type: 'text', text: translatedString };
         return client.replyMessage(event.replyToken, translated);
       }
     })
